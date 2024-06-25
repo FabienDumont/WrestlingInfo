@@ -14,7 +14,7 @@ public class WrestlingEventReview {
 	public string? Comment { get; set; }
 	
 	[ForeignKey("WrestlingEventId")]
-	public WrestlingEvent? WrestlingEvent { get; set; }
+	public WrestlingEvent WrestlingEvent { get; set; }
 	public int WrestlingEventId { get; set; }
 	
 	public WrestlingEventReview(double rating) {

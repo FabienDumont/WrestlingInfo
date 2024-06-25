@@ -9,7 +9,7 @@ using WrestlingInfo.API.DbContexts;
 
 namespace WrestlingInfo.API.Migrations
 {
-    [DbContext(typeof(WrestlingContext))]
+    [DbContext(typeof(WrestlingInfoContext))]
     partial class WrestlingContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

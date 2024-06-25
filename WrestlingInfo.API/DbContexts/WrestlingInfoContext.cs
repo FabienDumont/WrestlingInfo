@@ -3,13 +3,13 @@ using WrestlingInfo.API.Entities;
 
 namespace WrestlingInfo.API.DbContexts;
 
-public class WrestlingContext : DbContext {
+public class WrestlingInfoContext : DbContext {
 	public DbSet<Promotion> Promotions { get; set; }
 	public DbSet<Wrestler> Wrestlers { get; set; }
 	public DbSet<WrestlingEvent> WrestlingEvents { get; set; }
 	public DbSet<WrestlingEventReview> WrestlingEventReviews { get; set; }
 
-	public WrestlingContext(DbContextOptions<WrestlingContext> options) : base(options) {
+	public WrestlingInfoContext(DbContextOptions<WrestlingInfoContext> options) : base(options) {
 	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder) {

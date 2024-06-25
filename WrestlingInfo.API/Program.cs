@@ -32,9 +32,11 @@ builder.Services.AddTransient<IMailService, CloudMailService>();
 #endif
 builder.Services.AddSingleton<WrestlingDataStore>();
 
-builder.Services.AddDbContext<WrestlingContext>(
+builder.Services.AddDbContext<WrestlingInfoContext>(
 	dbContextOptions => dbContextOptions.UseSqlite(builder.Configuration["ConnectionStrings:WrestlingInfoDBConnectionString"])
 );
+
+builder.Services.AddScoped<IWrestlingInfoRepository, WrestlingInfoRepository>();
 
 var app = builder.Build();
 

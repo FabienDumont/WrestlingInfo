@@ -10,7 +10,7 @@ using WrestlingInfo.API.DbContexts;
 
 namespace WrestlingInfo.API.Migrations
 {
-    [DbContext(typeof(WrestlingContext))]
+    [DbContext(typeof(WrestlingInfoContext))]
     [Migration("20240625090628_WrestlingInfoDBInitialMigration")]
     partial class WrestlingInfoDBInitialMigration
     {
