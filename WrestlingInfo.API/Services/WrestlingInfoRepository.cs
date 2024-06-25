@@ -23,6 +23,10 @@ public class WrestlingInfoRepository : IWrestlingInfoRepository {
 		return await _context.Promotions.Where(p => p.Id == promotionId).FirstOrDefaultAsync();
 	}
 
+	public async Task<bool> PromotionExistsAsync(int promotionId) {
+		return await _context.Promotions.AnyAsync(p => p.Id == promotionId);
+	}
+
 	public async Task<IEnumerable<WrestlingEvent>> GetWrestlingEventsForPromotionAsync(int promotionId) {
 		return await _context.WrestlingEvents.Where(e => e.PromotionId == promotionId).ToListAsync();
 	}
@@ -34,6 +38,11 @@ public class WrestlingInfoRepository : IWrestlingInfoRepository {
 		}
 
 		return await _context.WrestlingEvents.Where(e => e.PromotionId == promotionId && e.Id == wrestlingEventId).FirstOrDefaultAsync();
+	}
+
+	public async Task<bool> WrestlingEventExistsAsync(int promotionId, int wrestlingEventId) {
+		return await PromotionExistsAsync(promotionId) &&
+		       await _context.WrestlingEvents.AnyAsync(e => e.PromotionId == promotionId && e.Id == wrestlingEventId);
 	}
 
 	public async Task<IEnumerable<WrestlingEventReview>> GetReviewsForWrestlingEventAsync(int promotionId, int wrestlingEventId) {

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using WrestlingInfo.API.Models;
+using WrestlingInfo.API.Services;
 
 namespace WrestlingInfo.API.Controllers;
 
@@ -7,28 +9,35 @@ namespace WrestlingInfo.API.Controllers;
 [Route("api/promotions")]
 public class PromotionsController : ControllerBase {
 	private readonly ILogger<PromotionsController> _logger;
-	private readonly WrestlingDataStore _wrestlingDataStore;
+	private readonly IWrestlingInfoRepository _wrestlingInfoRepository;
+	private readonly IMapper _mapper;
 
-	public PromotionsController(ILogger<PromotionsController> logger, WrestlingDataStore wrestlingDataStore) {
+	public PromotionsController(ILogger<PromotionsController> logger, IWrestlingInfoRepository wrestlingInfoRepository, IMapper mapper) {
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-		_wrestlingDataStore = wrestlingDataStore ?? throw new ArgumentNullException(nameof(wrestlingDataStore));
+		_wrestlingInfoRepository = wrestlingInfoRepository ?? throw new ArgumentNullException(nameof(wrestlingInfoRepository));
+		_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 	}
 
 	[HttpGet]
-	public ActionResult<IEnumerable<PromotionDto>> GetPromotions() {
-		return Ok(_wrestlingDataStore.Promotions);
+	public async Task<ActionResult<IEnumerable<PromotionWithoutWrestlingEventsDto>>> GetPromotions() {
+		var promotionEntities = await _wrestlingInfoRepository.GetPromotionsAsync();
+		return Ok(_mapper.Map<IEnumerable<PromotionWithoutWrestlingEventsDto>>(promotionEntities));
 	}
 
 	[HttpGet("{id}")]
-	public ActionResult<PromotionDto> GetPromotion(int id) {
+	public async Task<IActionResult> GetPromotion(int id, bool includeWrestlingEvents = false) {
 		try {
-			PromotionDto? promotionToReturn = _wrestlingDataStore.Promotions.FirstOrDefault(p => p.Id == id);
+			var promotion = await _wrestlingInfoRepository.GetPromotionAsync(id, includeWrestlingEvents);
 
-			if (promotionToReturn is null) {
+			if (promotion is null) {
 				return NotFound();
 			}
 
-			return Ok(promotionToReturn);
+			if (includeWrestlingEvents) {
+				return Ok(_mapper.Map<PromotionDto>(promotion));
+			}
+
+			return Ok(_mapper.Map<PromotionWithoutWrestlingEventsDto>(promotion));
 		} catch (Exception ex) {
 			_logger.LogCritical($"Exception while getting promotion with id {id}.", ex);
 			return StatusCode(500, "A problem happened while handling your request.");

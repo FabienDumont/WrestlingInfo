@@ -38,6 +38,8 @@ builder.Services.AddDbContext<WrestlingInfoContext>(
 
 builder.Services.AddScoped<IWrestlingInfoRepository, WrestlingInfoRepository>();
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment()) {

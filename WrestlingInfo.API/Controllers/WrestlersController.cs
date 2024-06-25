@@ -1,30 +1,35 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using WrestlingInfo.API.Models;
+using WrestlingInfo.API.Services;
 
 namespace WrestlingInfo.API.Controllers;
 
 [ApiController]
 [Route("api/wrestlers")]
 public class WrestlersController : ControllerBase {
-	private readonly WrestlingDataStore _wrestlingDataStore;
+	private readonly IWrestlingInfoRepository _wrestlingInfoRepository;
+	private readonly IMapper _mapper;
 
-	public WrestlersController(WrestlingDataStore wrestlingDataStore) {
-		_wrestlingDataStore = wrestlingDataStore ?? throw new ArgumentNullException(nameof(wrestlingDataStore));
+	public WrestlersController(IWrestlingInfoRepository wrestlingInfoRepository, IMapper mapper) {
+		_wrestlingInfoRepository = wrestlingInfoRepository ?? throw new ArgumentNullException(nameof(wrestlingInfoRepository));
+		_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
 	}
 	
 	[HttpGet]
-	public ActionResult<IEnumerable<WrestlerDto>> GetWrestlers() {
-		return Ok(_wrestlingDataStore.Wrestlers);
+	public async Task<ActionResult<IEnumerable<WrestlerDto>>> GetWrestlers() {
+		var wrestlerEntities = await _wrestlingInfoRepository.GetWrestlersAsync();
+		return Ok(_mapper.Map<IEnumerable<PromotionWithoutWrestlingEventsDto>>(wrestlerEntities));
 	}
 	
 	[HttpGet("{id}")]
-	public ActionResult<PromotionDto> GetWrestler(int id) {
-		WrestlerDto? wrestlerToReturn = _wrestlingDataStore.Wrestlers.FirstOrDefault(w => w.Id == id);
+	public async Task<ActionResult<PromotionDto>> GetWrestler(int id) {
+		var wrestler = await _wrestlingInfoRepository.GetWrestlerAsync(id);
 
-		if (wrestlerToReturn is null) {
+		if (wrestler is null) {
 			return NotFound();
 		}
 
-		return Ok(wrestlerToReturn);
+		return Ok(_mapper.Map<WrestlerDto>(wrestler));
 	}
 }
