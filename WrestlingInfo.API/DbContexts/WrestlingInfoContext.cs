@@ -16,6 +16,9 @@ public class WrestlingInfoContext : DbContext {
 		modelBuilder.Entity<Promotion>().HasData(
 			new Promotion("WWE") {
 				Id = 1
+			},
+			new Promotion("AEW") {
+				Id = 2
 			}
 		);
 		
@@ -24,6 +27,16 @@ public class WrestlingInfoContext : DbContext {
 				Id = 1,
 				PromotionId = 1,
 				Date = new DateOnly(2024, 1, 1)
+			},
+			new WrestlingEvent("Rampage") {
+				Id = 2,
+				PromotionId = 2,
+				Date = new DateOnly(2024, 1, 3)
+			},
+			new WrestlingEvent("Smackdown") {
+				Id = 3,
+				PromotionId = 1,
+				Date = new DateOnly(2024, 1, 5)
 			}
 		);
 

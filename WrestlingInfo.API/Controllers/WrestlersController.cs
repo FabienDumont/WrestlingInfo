@@ -19,7 +19,7 @@ public class WrestlersController : ControllerBase {
 	[HttpGet]
 	public async Task<ActionResult<IEnumerable<WrestlerDto>>> GetWrestlers() {
 		var wrestlerEntities = await _wrestlingInfoRepository.GetWrestlersAsync();
-		return Ok(_mapper.Map<IEnumerable<PromotionWithoutWrestlingEventsDto>>(wrestlerEntities));
+		return Ok(_mapper.Map<IEnumerable<WrestlerDto>>(wrestlerEntities));
 	}
 	
 	[HttpGet("{id}")]

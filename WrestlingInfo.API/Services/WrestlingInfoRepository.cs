@@ -33,26 +33,37 @@ public class WrestlingInfoRepository : IWrestlingInfoRepository {
 
 	public async Task<WrestlingEvent?> GetWrestlingEventForPromotionAsync(int promotionId, int wrestlingEventId, bool includeReviews) {
 		if (includeReviews) {
-			return await _context.WrestlingEvents.Include(e => e.Reviews).Where(e => e.PromotionId == promotionId && e.Id == wrestlingEventId)
+			return await _context.WrestlingEvents.Include(e => e.Reviews).Where(e => e.Id == wrestlingEventId && e.PromotionId == promotionId)
 				.FirstOrDefaultAsync();
 		}
 
-		return await _context.WrestlingEvents.Where(e => e.PromotionId == promotionId && e.Id == wrestlingEventId).FirstOrDefaultAsync();
+		return await _context.WrestlingEvents.Where(e => e.Id == wrestlingEventId).FirstOrDefaultAsync();
 	}
 
-	public async Task<bool> WrestlingEventExistsAsync(int promotionId, int wrestlingEventId) {
-		return await PromotionExistsAsync(promotionId) &&
-		       await _context.WrestlingEvents.AnyAsync(e => e.PromotionId == promotionId && e.Id == wrestlingEventId);
+	public async Task<bool> WrestlingEventExistsForPromotionAsync(int promotionId, int wrestlingEventId) {
+		return await _context.WrestlingEvents.AnyAsync(e => e.Id == wrestlingEventId && e.PromotionId == promotionId);
 	}
 
-	public async Task<IEnumerable<WrestlingEventReview>> GetReviewsForWrestlingEventAsync(int promotionId, int wrestlingEventId) {
-		return await _context.WrestlingEventReviews.Where(r => r.WrestlingEvent.PromotionId == promotionId && r.WrestlingEventId == wrestlingEventId)
+	public async Task<IEnumerable<WrestlingEventReview>> GetReviewsForWrestlingEventAsync(int wrestlingEventId) {
+		return await _context.WrestlingEventReviews.Where(r => r.WrestlingEventId == wrestlingEventId)
 			.ToListAsync();
 	}
 
-	public async Task<WrestlingEventReview?> GetReviewForWrestlingEventAsync(int promotionId, int wrestlingEventId, int reviewId) {
+	public async Task<WrestlingEventReview?> GetReviewForWrestlingEventAsync(int wrestlingEventId, int reviewId) {
 		return await _context.WrestlingEventReviews
-			.Where(r => r.WrestlingEvent.PromotionId == promotionId && r.WrestlingEventId == wrestlingEventId && r.Id == reviewId).FirstOrDefaultAsync();
+			.Where(r => r.WrestlingEventId == wrestlingEventId && r.Id == reviewId).FirstOrDefaultAsync();
+	}
+
+	public async Task AddReviewForWrestlingEvent(int promotionId, int wrestlingEventId, WrestlingEventReview review) {
+		var wrestlingEvent = await GetWrestlingEventForPromotionAsync(promotionId, wrestlingEventId, false);
+
+		if (wrestlingEvent is not null) {
+			wrestlingEvent.Reviews.Add(review);
+		}
+	}
+	
+	public void DeleteReview(WrestlingEventReview review) {
+		_context.WrestlingEventReviews.Remove(review);
 	}
 
 	public async Task<IEnumerable<Wrestler>> GetWrestlersAsync() {
@@ -61,5 +72,9 @@ public class WrestlingInfoRepository : IWrestlingInfoRepository {
 
 	public async Task<Wrestler?> GetWrestlerAsync(int wrestlerId) {
 		return await _context.Wrestlers.Where(w => w.Id == wrestlerId).FirstOrDefaultAsync();
+	}
+
+	public async Task<bool> SaveChangesAsync() {
+		return (await _context.SaveChangesAsync() >= 0);
 	}
 }

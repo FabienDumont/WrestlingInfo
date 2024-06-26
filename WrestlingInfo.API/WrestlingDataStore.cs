@@ -16,6 +16,11 @@ public class WrestlingDataStore {
 						Id = 1,
 						Name = "Raw",
 						Date = new DateOnly(2024, 1, 1)
+					},
+					new() {
+						Id = 2,
+						Name = "Smackdown",
+						Date = new DateOnly(2024, 1, 5)
 					}
 				}
 			}
