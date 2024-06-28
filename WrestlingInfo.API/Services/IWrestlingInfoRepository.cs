@@ -3,6 +3,8 @@
 namespace WrestlingInfo.API.Services;
 
 public interface IWrestlingInfoRepository {
+	Task<IEnumerable<User>> GetUsersAsync();
+	Task<User?> GetUserAsync(string userName, string password);
 	Task<IEnumerable<Promotion>> GetPromotionsAsync();
 	Task<(IEnumerable<Promotion>, PaginationMetadata)> GetPromotionsAsync(string? name, string? searchQuery, int pageNumber, int pageSize);
 	Task<Promotion?> GetPromotionAsync(int promotionId, bool includeWrestlingEvents);

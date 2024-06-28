@@ -12,7 +12,7 @@ public class PromotionsController : ControllerBase {
 	private readonly ILogger<PromotionsController> _logger;
 	private readonly IWrestlingInfoRepository _wrestlingInfoRepository;
 	private readonly IMapper _mapper;
-	private const int maxPromotionsPageSize = 20;
+	private const int MaxPromotionsPageSize = 20;
 
 	public PromotionsController(ILogger<PromotionsController> logger, IWrestlingInfoRepository wrestlingInfoRepository, IMapper mapper) {
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -24,8 +24,8 @@ public class PromotionsController : ControllerBase {
 	public async Task<ActionResult<IEnumerable<PromotionWithoutWrestlingEventsDto>>> GetPromotions(
 		string? name, string? searchQuery, int pageNumber = 1, int pageSize = 10
 	) {
-		if (pageSize > maxPromotionsPageSize) {
-			pageSize = maxPromotionsPageSize;
+		if (pageSize > MaxPromotionsPageSize) {
+			pageSize = MaxPromotionsPageSize;
 		}
 		
 		var (promotionEntities, paginationMetadata) = await _wrestlingInfoRepository.GetPromotionsAsync(name, searchQuery, pageNumber, pageSize);

@@ -11,6 +11,14 @@ public class WrestlingInfoRepository : IWrestlingInfoRepository {
 		_context = context ?? throw new ArgumentNullException(nameof(context));
 	}
 
+	public async Task<IEnumerable<User>> GetUsersAsync() {
+		return await _context.Users.OrderBy(p => p.UserName).ToListAsync();
+	}
+
+	public async Task<User?> GetUserAsync(string userName, string password) {
+		return await _context.Users.Where(u => u.UserName.Equals(userName) && u.Password.Equals(password)).FirstOrDefaultAsync();
+	}
+
 	public async Task<IEnumerable<Promotion>> GetPromotionsAsync() {
 		return await _context.Promotions.OrderBy(p => p.Name).ToListAsync();
 	}

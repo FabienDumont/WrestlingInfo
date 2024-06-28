@@ -51,6 +51,27 @@ namespace WrestlingInfo.API.Migrations
                         });
                 });
 
+            modelBuilder.Entity("WrestlingInfo.API.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("WrestlingInfo.API.Entities.Wrestler", b =>
                 {
                     b.Property<int>("Id")

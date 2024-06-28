@@ -11,7 +11,7 @@ using WrestlingInfo.API.DbContexts;
 namespace WrestlingInfo.API.Migrations
 {
     [DbContext(typeof(WrestlingInfoContext))]
-    [Migration("20240627145536_WrestlingInfoDBInitialMigration")]
+    [Migration("20240628134609_WrestlingInfoDBInitialMigration")]
     partial class WrestlingInfoDBInitialMigration
     {
         /// <inheritdoc />
@@ -52,6 +52,27 @@ namespace WrestlingInfo.API.Migrations
                             Description = "All Elite Wrestling (AEW) was founded in 2019.",
                             Name = "AEW"
                         });
+                });
+
+            modelBuilder.Entity("WrestlingInfo.API.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("WrestlingInfo.API.Entities.Wrestler", b =>

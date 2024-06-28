@@ -4,6 +4,7 @@ using WrestlingInfo.API.Entities;
 namespace WrestlingInfo.API.DbContexts;
 
 public class WrestlingInfoContext : DbContext {
+	public DbSet<User> Users { get; set; }
 	public DbSet<Promotion> Promotions { get; set; }
 	public DbSet<Wrestler> Wrestlers { get; set; }
 	public DbSet<WrestlingEvent> WrestlingEvents { get; set; }
