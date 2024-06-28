@@ -35,7 +35,7 @@ public class WrestlingEventsController : ControllerBase {
 			return NotFound();
 		}
 		
-		var wrestlingEvent = await _wrestlingInfoRepository.GetWrestlingEventForPromotionAsync(promotionId, eventId, includeReviews);
+		var wrestlingEvent = await _wrestlingInfoRepository.GetWrestlingEventAsync(eventId, includeReviews);
 
 		if (wrestlingEvent is null) {
 			return NotFound();

@@ -30,7 +30,6 @@ builder.Services.AddTransient<IMailService, LocalMailService>();
 #else
 builder.Services.AddTransient<IMailService, CloudMailService>();
 #endif
-builder.Services.AddSingleton<WrestlingDataStore>();
 
 builder.Services.AddDbContext<WrestlingInfoContext>(
 	dbContextOptions => dbContextOptions.UseSqlite(builder.Configuration["ConnectionStrings:WrestlingInfoDBConnectionString"])

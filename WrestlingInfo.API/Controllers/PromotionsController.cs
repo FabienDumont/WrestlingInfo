@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using WrestlingInfo.API.Models;
 using WrestlingInfo.API.Services;
@@ -11,6 +12,7 @@ public class PromotionsController : ControllerBase {
 	private readonly ILogger<PromotionsController> _logger;
 	private readonly IWrestlingInfoRepository _wrestlingInfoRepository;
 	private readonly IMapper _mapper;
+	private const int maxPromotionsPageSize = 20;
 
 	public PromotionsController(ILogger<PromotionsController> logger, IWrestlingInfoRepository wrestlingInfoRepository, IMapper mapper) {
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -19,8 +21,17 @@ public class PromotionsController : ControllerBase {
 	}
 
 	[HttpGet]
-	public async Task<ActionResult<IEnumerable<PromotionWithoutWrestlingEventsDto>>> GetPromotions() {
-		var promotionEntities = await _wrestlingInfoRepository.GetPromotionsAsync();
+	public async Task<ActionResult<IEnumerable<PromotionWithoutWrestlingEventsDto>>> GetPromotions(
+		string? name, string? searchQuery, int pageNumber = 1, int pageSize = 10
+	) {
+		if (pageSize > maxPromotionsPageSize) {
+			pageSize = maxPromotionsPageSize;
+		}
+		
+		var (promotionEntities, paginationMetadata) = await _wrestlingInfoRepository.GetPromotionsAsync(name, searchQuery, pageNumber, pageSize);
+		
+		Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
+		
 		return Ok(_mapper.Map<IEnumerable<PromotionWithoutWrestlingEventsDto>>(promotionEntities));
 	}
 

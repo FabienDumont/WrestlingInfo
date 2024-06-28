@@ -15,10 +15,12 @@ public class WrestlingInfoContext : DbContext {
 	protected override void OnModelCreating(ModelBuilder modelBuilder) {
 		modelBuilder.Entity<Promotion>().HasData(
 			new Promotion("WWE") {
-				Id = 1
+				Id = 1,
+				Description = "World Wrestling Entertainment (WWE) was founded in 1953 as Capitol Wrestling Corporation (CWC)."
 			},
 			new Promotion("AEW") {
-				Id = 2
+				Id = 2,
+				Description = "All Elite Wrestling (AEW) was founded in 2019."
 			}
 		);
 		

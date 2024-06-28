@@ -62,7 +62,7 @@ public class WrestlingEventReviewsController : ControllerBase {
 
 		var finalReview = _mapper.Map<WrestlingEventReview>(review);
 
-		await _wrestlingInfoRepository.AddReviewForWrestlingEvent(promotionId, eventId, finalReview);
+		await _wrestlingInfoRepository.AddReviewForWrestlingEvent(eventId, finalReview);
 
 		await _wrestlingInfoRepository.SaveChangesAsync();
 
