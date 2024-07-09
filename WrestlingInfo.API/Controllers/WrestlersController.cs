@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using WrestlingInfo.API.Entities;
 using WrestlingInfo.API.Models;
 using WrestlingInfo.API.Services;
 
@@ -18,13 +19,13 @@ public class WrestlersController : ControllerBase {
 	
 	[HttpGet]
 	public async Task<ActionResult<IEnumerable<WrestlerDto>>> GetWrestlers() {
-		var wrestlerEntities = await _wrestlingInfoRepository.GetWrestlersAsync();
+		IEnumerable<Wrestler>? wrestlerEntities = await _wrestlingInfoRepository.GetWrestlersAsync();
 		return Ok(_mapper.Map<IEnumerable<WrestlerDto>>(wrestlerEntities));
 	}
 	
 	[HttpGet("{id}")]
 	public async Task<ActionResult<PromotionDto>> GetWrestler(int id) {
-		var wrestler = await _wrestlingInfoRepository.GetWrestlerAsync(id);
+		Wrestler? wrestler = await _wrestlingInfoRepository.GetWrestlerAsync(id);
 
 		if (wrestler is null) {
 			return NotFound();

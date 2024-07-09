@@ -12,11 +12,15 @@ public class WrestlingInfoRepository : IWrestlingInfoRepository {
 	}
 
 	public async Task<IEnumerable<User>> GetUsersAsync() {
-		return await _context.Users.OrderBy(p => p.UserName).ToListAsync();
+		return await _context.Users.OrderBy(p => p.Username).ToListAsync();
 	}
 
-	public async Task<User?> GetUserAsync(string userName, string password) {
-		return await _context.Users.Where(u => u.UserName.Equals(userName) && u.Password.Equals(password)).FirstOrDefaultAsync();
+	public async Task<User?> GetUserAsync(string userName) {
+		return await _context.Users.Where(u => u.Username.Equals(userName)).FirstOrDefaultAsync();
+	}
+
+	public async Task AddUser(User user) {
+		await _context.Users.AddAsync(user);
 	}
 
 	public async Task<IEnumerable<Promotion>> GetPromotionsAsync() {
@@ -24,7 +28,7 @@ public class WrestlingInfoRepository : IWrestlingInfoRepository {
 	}
 
 	public async Task<(IEnumerable<Promotion>, PaginationMetadata)> GetPromotionsAsync(string? name, string? searchQuery, int pageNumber, int pageSize) {
-		var collection = _context.Promotions as IQueryable<Promotion>;
+		IQueryable<Promotion> collection = _context.Promotions as IQueryable<Promotion>;
 
 		if (!string.IsNullOrWhiteSpace(name)) {
 			name = name.Trim();
@@ -36,11 +40,11 @@ public class WrestlingInfoRepository : IWrestlingInfoRepository {
 			collection = collection.Where(p => p.Name.Contains(searchQuery) || p.Description != null && p.Description.Contains(searchQuery));
 		}
 
-		var totalItemCount = await collection.CountAsync();
+		int totalItemCount = await collection.CountAsync();
 
-		var paginationMetadata = new PaginationMetadata(totalItemCount, pageSize, pageNumber);
+		PaginationMetadata paginationMetadata = new PaginationMetadata(totalItemCount, pageSize, pageNumber);
 
-		var collectionToReturn = await collection.OrderBy(p => p.Name).Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
+		List<Promotion> collectionToReturn = await collection.OrderBy(p => p.Name).Skip(pageSize * (pageNumber - 1)).Take(pageSize).ToListAsync();
 
 		return (collectionToReturn, paginationMetadata);
 	}
@@ -82,7 +86,7 @@ public class WrestlingInfoRepository : IWrestlingInfoRepository {
 	}
 
 	public async Task AddReviewForWrestlingEvent(int wrestlingEventId, WrestlingEventReview review) {
-		var wrestlingEvent = await GetWrestlingEventAsync(wrestlingEventId, false);
+		WrestlingEvent? wrestlingEvent = await GetWrestlingEventAsync(wrestlingEventId, false);
 
 		if (wrestlingEvent is not null) {
 			wrestlingEvent.Reviews.Add(review);

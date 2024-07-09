@@ -1,6 +1,4 @@
-﻿using WrestlingInfo.API.Models.Validation;
-
-namespace WrestlingInfo.API.Models;
+﻿namespace WrestlingInfo.API.Models;
 
 public class WrestlingEventReviewDto {
 	public int Id { get; set; }

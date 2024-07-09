@@ -33,7 +33,7 @@ public class WrestlingEventReviewsController : ControllerBase {
 			return NotFound();
 		}
 
-		var reviews = await _wrestlingInfoRepository.GetReviewsForWrestlingEventAsync(eventId);
+		IEnumerable<WrestlingEventReview> reviews = await _wrestlingInfoRepository.GetReviewsForWrestlingEventAsync(eventId);
 		return Ok(_mapper.Map<IEnumerable<WrestlingEventReviewDto>>(reviews));
 	}
 
@@ -43,7 +43,7 @@ public class WrestlingEventReviewsController : ControllerBase {
 			return NotFound();
 		}
 
-		var review = await _wrestlingInfoRepository.GetReviewForWrestlingEventAsync(eventId, reviewId);
+		WrestlingEventReview? review = await _wrestlingInfoRepository.GetReviewForWrestlingEventAsync(eventId, reviewId);
 
 		if (review is null) {
 			return NotFound();
@@ -60,13 +60,13 @@ public class WrestlingEventReviewsController : ControllerBase {
 			return NotFound();
 		}
 
-		var finalReview = _mapper.Map<WrestlingEventReview>(review);
+		WrestlingEventReview? finalReview = _mapper.Map<WrestlingEventReview>(review);
 
 		await _wrestlingInfoRepository.AddReviewForWrestlingEvent(eventId, finalReview);
 
 		await _wrestlingInfoRepository.SaveChangesAsync();
 
-		var createdReview = _mapper.Map<WrestlingEventReviewDto>(finalReview);
+		WrestlingEventReviewDto? createdReview = _mapper.Map<WrestlingEventReviewDto>(finalReview);
 
 		return CreatedAtRoute(
 			"GetWrestlingEventReview", new {
@@ -85,7 +85,7 @@ public class WrestlingEventReviewsController : ControllerBase {
 			return NotFound();
 		}
 
-		var reviewEntity = await _wrestlingInfoRepository.GetReviewForWrestlingEventAsync(eventId, reviewId);
+		WrestlingEventReview? reviewEntity = await _wrestlingInfoRepository.GetReviewForWrestlingEventAsync(eventId, reviewId);
 
 		if (reviewEntity is null) {
 			return NotFound();
@@ -107,13 +107,13 @@ public class WrestlingEventReviewsController : ControllerBase {
 			return NotFound();
 		}
 
-		var reviewEntity = await _wrestlingInfoRepository.GetReviewForWrestlingEventAsync(eventId, reviewId);
+		WrestlingEventReview? reviewEntity = await _wrestlingInfoRepository.GetReviewForWrestlingEventAsync(eventId, reviewId);
 
 		if (reviewEntity is null) {
 			return NotFound();
 		}
 
-		var wrestlingEventReviewToPatch = _mapper.Map<WrestlingEventReviewForUpdateDto>(reviewEntity);
+		WrestlingEventReviewForUpdateDto? wrestlingEventReviewToPatch = _mapper.Map<WrestlingEventReviewForUpdateDto>(reviewEntity);
 
 		patchDocument.ApplyTo(wrestlingEventReviewToPatch, ModelState);
 
@@ -138,7 +138,7 @@ public class WrestlingEventReviewsController : ControllerBase {
 			return NotFound();
 		}
 
-		var reviewEntity = await _wrestlingInfoRepository.GetReviewForWrestlingEventAsync(eventId, reviewId);
+		WrestlingEventReview? reviewEntity = await _wrestlingInfoRepository.GetReviewForWrestlingEventAsync(eventId, reviewId);
 
 		if (reviewEntity is null) {
 			return NotFound();

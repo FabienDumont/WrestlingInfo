@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using WrestlingInfo.API.Entities;
 using WrestlingInfo.API.Models;
 using WrestlingInfo.API.Services;
 
@@ -25,7 +26,7 @@ public class WrestlingEventsController : ControllerBase {
 			return NotFound();
 		}
 		
-		var wrestlingEventForPromotion = await _wrestlingInfoRepository.GetWrestlingEventsForPromotionAsync(promotionId);
+		IEnumerable<WrestlingEvent> wrestlingEventForPromotion = await _wrestlingInfoRepository.GetWrestlingEventsForPromotionAsync(promotionId);
 		return Ok(_mapper.Map<IEnumerable<WrestlingEventWithoutReviewsDto>>(wrestlingEventForPromotion));
 	}
 	
@@ -35,7 +36,7 @@ public class WrestlingEventsController : ControllerBase {
 			return NotFound();
 		}
 		
-		var wrestlingEvent = await _wrestlingInfoRepository.GetWrestlingEventAsync(eventId, includeReviews);
+		WrestlingEvent? wrestlingEvent = await _wrestlingInfoRepository.GetWrestlingEventAsync(eventId, includeReviews);
 
 		if (wrestlingEvent is null) {
 			return NotFound();

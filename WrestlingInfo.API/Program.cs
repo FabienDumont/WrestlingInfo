@@ -1,13 +1,16 @@
-using WrestlingInfo.API;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using WrestlingInfo.API.DbContexts;
 using WrestlingInfo.API.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().WriteTo.File("logs/wrestlinginfo.txt", rollingInterval: RollingInterval.Day).CreateLogger();
+Log.Logger = new LoggerConfiguration().MinimumLevel.Debug().WriteTo.Console().WriteTo.File("logs/wrestlinginfo.txt", rollingInterval: RollingInterval.Day)
+	.CreateLogger();
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Host.UseSerilog();
 
 // Add services to the container.
@@ -25,6 +28,32 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
 
+JwtSettings jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>() ?? throw new InvalidOperationException();
+builder.Services.AddSingleton(jwtSettings);
+
+byte[] key = Encoding.ASCII.GetBytes(jwtSettings.TokenKey);
+
+builder.Services.AddAuthentication(
+	options => {
+		options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+		options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+	}
+).AddJwtBearer(
+	options => {
+		options.TokenValidationParameters = new TokenValidationParameters {
+			ValidateIssuer = true,
+			ValidateAudience = true,
+			ValidateLifetime = true,
+			ValidateIssuerSigningKey = true,
+			ValidIssuer = jwtSettings.Issuer,
+			ValidAudience = jwtSettings.Audience,
+			IssuerSigningKey = new SymmetricSecurityKey(key)
+		};
+	}
+);
+
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 #if DEBUG
 builder.Services.AddTransient<IMailService, LocalMailService>();
 #else
@@ -39,7 +68,7 @@ builder.Services.AddScoped<IWrestlingInfoRepository, WrestlingInfoRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (!app.Environment.IsDevelopment()) {
 	app.UseExceptionHandler();
@@ -55,6 +84,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

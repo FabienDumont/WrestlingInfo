@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using WrestlingInfo.API.Entities;
 using WrestlingInfo.API.Models;
 using WrestlingInfo.API.Services;
 
@@ -28,7 +29,7 @@ public class PromotionsController : ControllerBase {
 			pageSize = MaxPromotionsPageSize;
 		}
 		
-		var (promotionEntities, paginationMetadata) = await _wrestlingInfoRepository.GetPromotionsAsync(name, searchQuery, pageNumber, pageSize);
+		(IEnumerable<Promotion> promotionEntities, PaginationMetadata paginationMetadata) = await _wrestlingInfoRepository.GetPromotionsAsync(name, searchQuery, pageNumber, pageSize);
 		
 		Response.Headers.Append("X-Pagination", JsonSerializer.Serialize(paginationMetadata));
 		
@@ -38,7 +39,7 @@ public class PromotionsController : ControllerBase {
 	[HttpGet("{id}")]
 	public async Task<IActionResult> GetPromotion(int id, bool includeWrestlingEvents = false) {
 		try {
-			var promotion = await _wrestlingInfoRepository.GetPromotionAsync(id, includeWrestlingEvents);
+			Promotion? promotion = await _wrestlingInfoRepository.GetPromotionAsync(id, includeWrestlingEvents);
 
 			if (promotion is null) {
 				return NotFound();
